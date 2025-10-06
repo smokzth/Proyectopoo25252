@@ -83,7 +83,7 @@ classDiagram
         +incrementar_reproducciones() None
         +get_duracion_formateada() str
     }
-
+    
     class ListaDeReproduccion {
         -nombre: str
         -canciones: list[Cancion]
@@ -98,7 +98,7 @@ classDiagram
         +listar_canciones() str
         +obtener_total_canciones() int
     }
-
+    
     class Biblioteca {
         -canciones: list[Cancion]
         -listas: dict[str, ListaDeReproduccion]
@@ -112,7 +112,7 @@ classDiagram
         +obtener_lista(nombre: str) ListaDeReproduccion | None
         +mostrar_estadisticas() None
     }
-
+    
     class Reproductor {
         -biblioteca: Biblioteca
         -lista_actual: ListaDeReproduccion | None
@@ -129,7 +129,7 @@ classDiagram
         +ajustar_volumen(nivel: float) None
         +obtener_estado() dict
     }
-
+    
     class InterfazConsola {
         -reproductor: Reproductor
         +__init__(reproductor: Reproductor)
@@ -140,7 +140,7 @@ classDiagram
         +buscar_canciones() None
         +ejecutar() None
     }
-
+    
     Biblioteca "1" *-- "*" Cancion : contiene
     Biblioteca "1" *-- "*" ListaDeReproduccion : gestiona
     ListaDeReproduccion "1" o-- "*" Cancion : referencia
@@ -148,8 +148,7 @@ classDiagram
     Reproductor "1" --> "0..1" ListaDeReproduccion : reproduce
     Reproductor "1" --> "0..1" Cancion : actual
     InterfazConsola "1" --> "1" Reproductor : controla
-
-
+```
 
 ### Descripción de Clases
 
