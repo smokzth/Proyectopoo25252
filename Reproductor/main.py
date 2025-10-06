@@ -18,20 +18,14 @@ def crear_datos_demo() -> Biblioteca:
     """
     biblioteca = Biblioteca()
 
-    # Crear canciones de ejemplo
+    # Crear canciones de ejemplo (sin ruta de archivo)
     canciones_demo = [
-        Cancion("Bohemian Rhapsody", "Queen", 355, "music/queen_br.mp3",
-                "A Night at the Opera", 1975, "Rock"),
-        Cancion("Imagine", "John Lennon", 183, "music/lennon_imagine.mp3",
-                "Imagine", 1971, "Rock"),
-        Cancion("Stairway to Heaven", "Led Zeppelin", 482, "music/lz_stairway.mp3",
-                "Led Zeppelin IV", 1971, "Rock"),
-        Cancion("Hotel California", "Eagles", 391, "music/eagles_hc.mp3",
-                "Hotel California", 1976, "Rock"),
-        Cancion("Billie Jean", "Michael Jackson", 294, "music/mj_bj.mp3",
-                "Thriller", 1982, "Pop"),
-        Cancion("Smells Like Teen Spirit", "Nirvana", 301, "music/nirvana_slts.mp3",
-                "Nevermind", 1991, "Grunge"),
+        Cancion("Bohemian Rhapsody", "Queen", 355, "A Night at the Opera", 1975, "Rock"),
+        Cancion("Imagine", "John Lennon", 183, "Imagine", 1971, "Rock"),
+        Cancion("Stairway to Heaven", "Led Zeppelin", 482, "Led Zeppelin IV", 1971, "Rock"),
+        Cancion("Hotel California", "Eagles", 391, "Hotel California", 1976, "Rock"),
+        Cancion("Billie Jean", "Michael Jackson", 294, "Thriller", 1982, "Pop"),
+        Cancion("Smells Like Teen Spirit", "Nirvana", 301, "Nevermind", 1991, "Grunge"),
     ]
 
     # Agregar canciones a la biblioteca
@@ -86,3 +80,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

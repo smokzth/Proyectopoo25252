@@ -1,11 +1,10 @@
 class Cancion:
 
     def __init__(self, titulo: str, artista: str, duracion_segundos: int,
-                 ruta_archivo: str, album: str = "", año: int = 0, genero: str = "") -> None:
+                 album: str = "", año: int = 0, genero: str = "") -> None:
         self.titulo = titulo
         self.artista = artista
         self.duracion_segundos = duracion_segundos
-        self.ruta_archivo = ruta_archivo
         self.album = album
         self.año = año
         self.genero = genero
@@ -26,7 +25,6 @@ class Cancion:
             info_str += f"Género: {self.genero}\n"
 
         info_str += f"Reproducciones: {self.reproducciones}\n"
-        info_str += f"Archivo: {self.ruta_archivo}\n"
         info_str += f"{'=' * 50}\n"
 
         return info_str
@@ -41,3 +39,4 @@ class Cancion:
 
     def __str__(self) -> str:
         return f"{self.titulo} - {self.artista} ({self.get_duracion_formateada()})"
+
