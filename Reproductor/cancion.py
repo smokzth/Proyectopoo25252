@@ -1,42 +1,26 @@
 class Cancion:
-
-    def __init__(self, titulo: str, artista: str, duracion_segundos: int,
-                 album: str = "", año: int = 0, genero: str = "") -> None:
+    def __init__(self, titulo, artista, duracion, album, anio, genero):
         self.titulo = titulo
         self.artista = artista
-        self.duracion_segundos = duracion_segundos
+        self.duracion = duracion
         self.album = album
-        self.año = año
+        self.anio = anio
         self.genero = genero
-        self.reproducciones = 0
+        self.veces_reproducida = 0
 
-    def info(self) -> str:
-        info_str = f"\n{'=' * 50}\n"
-        info_str += f"♪ {self.titulo}\n"
-        info_str += f"{'=' * 50}\n"
-        info_str += f"Artista: {self.artista}\n"
-        info_str += f"Duración: {self.get_duracion_formateada()}\n"
+    def reproducir(self):
+        self.veces_reproducida += 1
+        print(f"▶ Reproduciendo: {self.titulo} - {self.artista}")
+        print(f"Veces reproducida: {self.veces_reproducida}")
 
-        if self.album:
-            info_str += f"Álbum: {self.album}\n"
-        if self.año:
-            info_str += f"Año: {self.año}\n"
-        if self.genero:
-            info_str += f"Género: {self.genero}\n"
+    def mostrar_info(self):
+        print(f"Título: {self.titulo}")
+        print(f"Artista: {self.artista}")
+        print(f"Duración: {self.duracion}")
+        print(f"Álbum: {self.album}")
+        print(f"Año: {self.anio}")
+        print(f"Género: {self.genero}")
+        print(f"Reproducciones: {self.veces_reproducida}")
 
-        info_str += f"Reproducciones: {self.reproducciones}\n"
-        info_str += f"{'=' * 50}\n"
 
-        return info_str
-
-    def incrementar_reproducciones(self) -> None:
-        self.reproducciones += 1
-
-    def get_duracion_formateada(self) -> str:
-        minutos = self.duracion_segundos // 60
-        segundos = self.duracion_segundos % 60
-        return f"{minutos}:{segundos:02d}"
-
-    def __str__(self) -> str:
-        return f"{self.titulo} - {self.artista} ({self.get_duracion_formateada()})"
 

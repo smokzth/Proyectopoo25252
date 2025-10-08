@@ -1,72 +1,53 @@
-from biblioteca import Biblioteca
-from lista_reproduccion import ListaDeReproduccion
-from cancion import Cancion
-
-
 class Reproductor:
-    def __init__(self, biblioteca: Biblioteca) -> None:
-        self.biblioteca = biblioteca
-        self.lista_actual: ListaDeReproduccion | None = None
-        self.cancion_actual: Cancion | None = None
+    def __init__(self):
+        self.lista_actual = None
+        self.cancion_actual = None
         self.reproduciendo = False
 
-    def play(self) -> None:
+    def seleccionar_lista(self, lista):
+        self.lista_actual = lista
+        self.cancion_actual = lista.obtener_actual()
+        print(f"Lista '{lista.nombre}' seleccionada para reproducción.")
+
+    def play(self):
+        if not self.lista_actual:
+            print("No hay lista seleccionada.")
+            return
+        if not self.cancion_actual:
+            self.cancion_actual = self.lista_actual.obtener_actual()
         if self.cancion_actual:
+            self.cancion_actual.reproducir()
             self.reproduciendo = True
-            self.cancion_actual.incrementar_reproducciones()
-            print(f"\n▶ REPRODUCIENDO: {self.cancion_actual}")
         else:
-            print("✗ No hay canción seleccionada")
+            print("No hay canciones en la lista.")
 
-    def pause(self) -> None:
+    def stop(self):
         if self.reproduciendo:
+            print("⏹ Reproducción detenida.")
             self.reproduciendo = False
-            print("⏸ Pausado")
         else:
-            print("✗ No hay reproducción activa")
+            print("No hay ninguna canción reproduciéndose.")
 
-    def stop(self) -> None:
-        self.reproduciendo = False
-        print("⏹ Detenido")
-
-    def siguiente(self) -> None:
+    def siguiente(self):
         if self.lista_actual:
             self.cancion_actual = self.lista_actual.siguiente()
-            if self.reproduciendo and self.cancion_actual:
-                self.play()
-            elif self.cancion_actual:
-                print(f"⏭ Siguiente: {self.cancion_actual}")
+            if self.cancion_actual:
+                self.cancion_actual.reproducir()
+            else:
+                print("No hay más canciones.")
         else:
-            print("✗ No hay lista de reproducción activa")
+            print("No hay lista seleccionada.")
 
-    def anterior(self) -> None:
+    def anterior(self):
         if self.lista_actual:
             self.cancion_actual = self.lista_actual.anterior()
-            if self.reproduciendo and self.cancion_actual:
-                self.play()
-            elif self.cancion_actual:
-                print(f"⏮ Anterior: {self.cancion_actual}")
+            if self.cancion_actual:
+                self.cancion_actual.reproducir()
+            else:
+                print("No hay canciones anteriores.")
         else:
-            print("✗ No hay lista de reproducción activa")
+            print("No hay lista seleccionada.")
 
-    def cambiar_lista(self, nombre_lista: str) -> None:
-        lista = self.biblioteca.obtener_lista(nombre_lista)
-        if lista and lista.obtener_total_canciones() > 0:
-            self.lista_actual = lista
-            self.cancion_actual = lista.obtener_cancion_actual()
-            print(f"✓ Lista activa: {nombre_lista}")
-            print(f"  Canción actual: {self.cancion_actual}")
-        else:
-            print(f"✗ Lista '{nombre_lista}' no existe o está vacía")
 
-    def obtener_estado(self) -> dict[str, str | bool]:
-        return {
-            "cancion": str(self.cancion_actual) if self.cancion_actual else "Ninguna",
-            "lista": self.lista_actual.nombre if self.lista_actual else "Ninguna",
-            "reproduciendo": self.reproduciendo
-        }
 
-    def __str__(self) -> str:
-        estado = "reproduciendo" if self.reproduciendo else "pausado"
-        return f"Reproductor ({estado})"
 

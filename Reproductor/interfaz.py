@@ -1,104 +1,159 @@
-class InterfazConsola:
-    def __init__(self, reproductor):
-        self.reproductor = reproductor
+from biblioteca import Biblioteca
+from lista_reproduccion import ListaReproduccion
+from reproductor import Reproductor
+from cancion import Cancion
 
-    def mostrar_menu_principal(self):
-        print("\n🎵 --- REPRODUCTOR DE MÚSICA --- 🎵")
-        print("1. Ver biblioteca")
-        print("2. Gestionar listas")
-        print("3. Controles de reproducción")
-        print("4. Buscar canciones")
-        print("5. Estadísticas")
-        print("0. Salir")
-
-    def mostrar_biblioteca(self):
-        print("\n📚 Biblioteca musical:")
-        for i, cancion in enumerate(self.reproductor.biblioteca.canciones):
-            print(f"{i+1}. {cancion.info()}")
-
-    def gestionar_listas(self):
-        print("\n🎶 Listas disponibles:")
-        for nombre in self.reproductor.biblioteca.listas:
-            print(f"- {nombre}")
-        nombre_lista = input("Nombre de la lista para crear/usar: ")
-        lista = self.reproductor.biblioteca.obtener_lista(nombre_lista)
-        if not lista:
-            lista = self.reproductor.biblioteca.crear_lista(nombre_lista)
-            print(f"Lista '{nombre_lista}' creada.")
-        while True:
-            print(f"\n📀 Lista '{nombre_lista}'")
-            print("1. Ver canciones")
-            print("2. Agregar canción de la biblioteca")
-            print("3. Eliminar canción")
-            print("0. Volver")
-            opcion = input("Seleccione una opción: ")
-            if opcion == "1":
-                print(lista.listar_canciones())
-            elif opcion == "2":
-                self.mostrar_biblioteca()
-                indice = int(input("Número de canción a agregar: ")) - 1
-                if 0 <= indice < len(self.reproductor.biblioteca.canciones):
-                    lista.agregar_cancion(self.reproductor.biblioteca.canciones[indice])
-                    print("Canción agregada.")
-            elif opcion == "3":
-                print(lista.listar_canciones())
-                indice = int(input("Número de canción a eliminar: ")) - 1
-                lista.eliminar_cancion(indice)
-            elif opcion == "0":
-                break
-
-    def controles_reproductor(self):
-        while True:
-            print("\n🎧 Controles:")
-            print("1. Play")
-            print("2. Pause")
-            print("3. Stop")
-            print("4. Siguiente")
-            print("5. Anterior")
-            print("6. Cambiar lista")
-            print("0. Volver")
-            opcion = input("Seleccione: ")
-            if opcion == "1":
-                self.reproductor.play()
-            elif opcion == "2":
-                self.reproductor.pause()
-            elif opcion == "3":
-                self.reproductor.stop()
-            elif opcion == "4":
-                self.reproductor.siguiente()
-            elif opcion == "5":
-                self.reproductor.anterior()
-            elif opcion == "6":
-                nombre = input("Nombre de la lista: ")
-                self.reproductor.cambiar_lista(nombre)
-            elif opcion == "0":
-                break
-
-    def buscar_canciones(self):
-        criterio = input("Buscar por (titulo/artista): ").lower()
-        valor = input("Ingrese el texto de búsqueda: ")
-        if criterio == "titulo":
-            resultados = self.reproductor.biblioteca.buscar_por_titulo(valor)
-        else:
-            resultados = self.reproductor.biblioteca.buscar_por_artista(valor)
-        print("\n🔍 Resultados:")
-        for c in resultados:
-            print(c.info())
+class Interfaz:
+    def __init__(self):
+        self.biblioteca = Biblioteca()
+        self.listas = {}
+        self.reproductor = Reproductor()
 
     def ejecutar(self):
         while True:
-            self.mostrar_menu_principal()
+            print("\n--- Menú Principal ---")
+            print("1. Biblioteca")
+            print("2. Listas de Reproducción")
+            print("3. Reproductor")
+            print("4. Salir")
             opcion = input("Seleccione una opción: ")
+
             if opcion == "1":
-                self.mostrar_biblioteca()
+                self.menu_biblioteca()
             elif opcion == "2":
-                self.gestionar_listas()
+                self.menu_listas()
             elif opcion == "3":
-                self.controles_reproductor()
+                self.menu_reproductor()
             elif opcion == "4":
-                self.buscar_canciones()
-            elif opcion == "5":
-                self.reproductor.biblioteca.mostrar_estadisticas()
-            elif opcion == "0":
-                print("👋 Saliendo del reproductor.")
+                print("👋 Saliendo del programa...")
                 break
+            else:
+                print("Opción inválida.")
+
+    # ----------- Biblioteca -------------
+    def menu_biblioteca(self):
+        while True:
+            print("\n--- Biblioteca ---")
+            print("1. Agregar canción")
+            print("2. Eliminar canción")
+            print("3. Mostrar canciones")
+            print("4. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                titulo = input("Título: ")
+                artista = input("Artista: ")
+                duracion = input("Duración: ")
+                album = input("Álbum: ")
+                anio = input("Año: ")
+                genero = input("Género: ")
+                cancion = Cancion(titulo, artista, duracion, album, anio, genero)
+                self.biblioteca.agregar_cancion(cancion)
+                print("✅ Canción agregada exitosamente.")
+
+            elif opcion == "2":
+                titulo = input("Título de la canción a eliminar: ")
+                if self.biblioteca.eliminar_cancion(titulo):
+                    print("🗑️ Canción eliminada.")
+                else:
+                    print("❌ No se encontró la canción.")
+
+            elif opcion == "3":
+                self.biblioteca.listar_canciones()
+
+            elif opcion == "4":
+                break
+            else:
+                print("Opción inválida.")
+
+    # ----------- Listas de reproducción -------------
+    def menu_listas(self):
+        while True:
+            print("\n--- Listas de Reproducción ---")
+            print("1. Crear lista")
+            print("2. Agregar canción a lista")
+            print("3. Eliminar canción de lista")
+            print("4. Mostrar listas")
+            print("5. Seleccionar lista para reproducir")
+            print("6. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                nombre = input("Nombre de la lista: ")
+                self.listas[nombre] = ListaReproduccion(nombre)
+                print(f"✅ Lista '{nombre}' creada.")
+
+            elif opcion == "2":
+                nombre = input("Nombre de la lista: ")
+                if nombre not in self.listas:
+                    print("❌ No existe esa lista.")
+                    continue
+                self.biblioteca.listar_canciones()
+                titulo = input("Título de la canción a agregar: ")
+                cancion = next((c for c in self.biblioteca.canciones if c.titulo.lower() == titulo.lower()), None)
+                if cancion:
+                    self.listas[nombre].agregar_cancion(cancion)
+                    print("🎵 Canción agregada a la lista.")
+                else:
+                    print("❌ No se encontró la canción.")
+
+            elif opcion == "3":
+                nombre = input("Nombre de la lista: ")
+                if nombre in self.listas:
+                    titulo = input("Título de la canción a eliminar: ")
+                    if self.listas[nombre].eliminar_cancion(titulo):
+                        print("🗑️ Canción eliminada de la lista.")
+                    else:
+                        print("❌ No se encontró en la lista.")
+                else:
+                    print("❌ No existe esa lista.")
+
+            elif opcion == "4":
+                if not self.listas:
+                    print("No hay listas creadas.")
+                else:
+                    for nombre, lista in self.listas.items():
+                        print(f"- {nombre} ({len(lista.canciones)} canciones)")
+
+            elif opcion == "5":
+                nombre = input("Nombre de la lista: ")
+                if nombre in self.listas:
+                    self.reproductor.seleccionar_lista(self.listas[nombre])
+                else:
+                    print("❌ No existe esa lista.")
+
+            elif opcion == "6":
+                break
+            else:
+                print("Opción inválida.")
+
+    # ----------- Reproductor -------------
+    def menu_reproductor(self):
+        while True:
+            print("\n--- Reproductor ---")
+            print("1. Play")
+            print("2. Stop")
+            print("3. Siguiente")
+            print("4. Anterior")
+            print("5. Mostrar canción actual")
+            print("6. Volver")
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                self.reproductor.play()
+            elif opcion == "2":
+                self.reproductor.stop()
+            elif opcion == "3":
+                self.reproductor.siguiente()
+            elif opcion == "4":
+                self.reproductor.anterior()
+            elif opcion == "5":
+                if self.reproductor.cancion_actual:
+                    self.reproductor.cancion_actual.mostrar_info()
+                else:
+                    print("No hay canción en reproducción.")
+            elif opcion == "6":
+                break
+            else:
+                print("Opción inválida.")
+
