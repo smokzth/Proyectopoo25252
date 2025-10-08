@@ -156,4 +156,3 @@ class Interfaz:
                 break
             else:
                 print("Opción inválida.")
-

@@ -28,7 +28,6 @@ Sistema de gestión musical con arquitectura orientada a objetos:
 - ✅ Gestión de la biblioteca
 - ✅ Listas de reproducción ilimitadas
 - ✅ Navegación entre canciones
-- ✅ Búsqueda 
 - ✅ Controles de reproducción completos
 
 ---
