@@ -77,7 +77,6 @@ def main():
     # Ejecutar aplicación
     interfaz.ejecutar()
 
-
 if __name__ == "__main__":
     main()
 
