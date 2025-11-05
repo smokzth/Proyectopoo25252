@@ -1,8 +1,4 @@
-"""
-Módulo reproductor.py
-Define la clase Reproductor para controlar la reproducción de música
-VERSIÓN CORREGIDA - Pausa y resume correctamente
-"""
+
 
 from biblioteca import Biblioteca
 from lista_reproduccion import ListaDeReproduccion
@@ -21,18 +17,8 @@ except ImportError:
 
 
 class Reproductor:
-    """
-    Controla la reproducción de música.
 
-    Attributes:
-        biblioteca (Biblioteca): Referencia a la biblioteca
-        lista_actual (ListaDeReproduccion): Lista en reproducción
-        cancion_actual (Cancion): Canción seleccionada
-        reproduciendo (bool): Estado de reproducción
-        pausado (bool): Estado de pausa
-        volumen (float): Nivel de volumen (0.0-1.0)
-        modo_audio_real (bool): Indica si pygame está disponible
-    """
+
 
     def __init__(self, biblioteca: Biblioteca):
         self.biblioteca = biblioteca

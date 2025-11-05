@@ -1,14 +1,8 @@
-"""
-Módulo interfaz.py
-Define la clase InterfazConsola para interacción con el usuario
-VERSIÓN ACTUALIZADA - Sincronizada con cambios del reproductor
-"""
 
 from reproductor import Reproductor
 
 
 class InterfazConsola:
-    """Interfaz de usuario en consola con todos los RF implementados"""
 
     def __init__(self, reproductor: Reproductor):
         self.reproductor = reproductor

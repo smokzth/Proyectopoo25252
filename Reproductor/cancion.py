@@ -1,24 +1,4 @@
-"""
-Módulo cancion.py
-Define la clase Cancion para representar una canción individual
-"""
-
-
 class Cancion:
-    """
-    Representa una canción con su información completa.
-
-    Attributes:
-        titulo (str): Nombre de la canción
-        artista (str): Intérprete o banda
-        duracion_segundos (int): Duración en segundos
-        ruta_archivo (str): Ubicación del archivo de audio
-        album (str): Álbum al que pertenece
-        año (int): Año de lanzamiento
-        genero (str): Género musical
-        reproducciones (int): Contador de reproducciones
-        es_favorita (bool): Indica si es canción favorita
-    """
 
     def __init__(self, titulo: str, artista: str, duracion_segundos: int,
                  ruta_archivo: str, album: str = "", año: int = 0, genero: str = ""):

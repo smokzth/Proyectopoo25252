@@ -1,9 +1,3 @@
-"""
-main.py - Punto de entrada del Reproductor de Música
-Ahora con opción de Interfaz Gráfica o Consola
-Versión mejorada con verificación de archivos
-"""
-
 from cancion import Cancion
 from biblioteca import Biblioteca
 from reproductor import Reproductor

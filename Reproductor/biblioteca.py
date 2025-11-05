@@ -1,7 +1,4 @@
-"""
-Módulo biblioteca.py
-Define la clase Biblioteca para gestionar el catálogo completo de música
-"""
+
 
 from cancion import Cancion
 from lista_reproduccion import ListaDeReproduccion
@@ -11,13 +8,7 @@ import json
 
 
 class Biblioteca:
-    """
-    Gestiona todas las canciones y listas de reproducción.
 
-    Attributes:
-        canciones (list): Lista de todas las canciones disponibles
-        listas (dict): Diccionario de listas de reproducción
-    """
 
     def __init__(self):
         self.canciones: list[Cancion] = []

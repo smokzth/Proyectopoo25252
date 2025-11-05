@@ -1,9 +1,3 @@
-"""
-interfaz_grafica.py
-Interfaz gráfica moderna para el Reproductor de Música
-Usa Tkinter (incluido con Python)
-VERSIÓN CORREGIDA - Maneja correctamente listas vacías
-"""
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext
@@ -13,7 +7,6 @@ from typing import Optional
 
 
 class ReproductorGUI:
-    """Interfaz gráfica moderna del reproductor"""
 
     def __init__(self, reproductor: Reproductor):
         self.reproductor = reproductor
