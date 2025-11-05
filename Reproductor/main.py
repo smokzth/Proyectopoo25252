@@ -39,13 +39,13 @@ def crear_datos_demo() -> Biblioteca:
                 "Clásicos", 1980, "Vallenato"),
         Cancion("Smells Like Teen Spirit", "Nirvana", 301, "music/nirvana_slts.mp3",
                 "Nevermind", 1991, "Grunge"),
-        Cancion("One", "Metallica", 447, "music/metallica_one.mp3",
+        Cancion("A Dormir Juntitos", "Liz Contigo", 282, "music/adormirjuntitos.mp3",
                 "...And Justice for All", 1988, "Metal"),
         Cancion("November Rain", "Guns N' Roses", 537, "music/gnr_nr.mp3",
                 "Use Your Illusion I", 1991, "Rock"),
         Cancion("Comfortably Numb", "Pink Floyd", 382, "music/pf_cn.mp3",
                 "The Wall", 1979, "Progressive Rock"),
-        Cancion("Sweet Child O' Mine", "Guns N' Roses", 356, "music/gnr_scom.mp3",
+        Cancion("La Plata", "Diomedes Díaz", 277, "music/laplata.mp3",
                 "Appetite for Destruction", 1987, "Rock"),
     ]
 
