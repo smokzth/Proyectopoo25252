@@ -2,6 +2,7 @@
 interfaz_grafica.py
 Interfaz gráfica moderna para el Reproductor de Música
 Usa Tkinter (incluido con Python)
+VERSIÓN CORREGIDA - Maneja correctamente listas vacías
 """
 
 import tkinter as tk
@@ -335,6 +336,9 @@ class ReproductorGUI:
 ⭐ Favoritas: {len(biblioteca.obtener_favoritas())}
 
 📊 Total reproducciones: {total_repr}
+
+💡 Tip: Haz doble clic en una 
+   canción para reproducirla
         """
         info_text.insert('1.0', info)
         info_text.config(state=tk.DISABLED)
@@ -430,6 +434,9 @@ class ReproductorGUI:
             else:
                 self.lbl_shuffle.config(text="🔀 Shuffle: OFF", fg=self.colors['text_secondary'])
                 self.btn_shuffle.config(bg=self.colors['bg_light'])
+        else:
+            self.lbl_lista_actual.config(text="Ninguna\n(0 canciones)")
+            self.lbl_shuffle.config(text="🔀 Shuffle: OFF", fg=self.colors['text_secondary'])
 
     def _actualizar_canciones(self):
         """Actualiza lista de canciones"""
@@ -450,7 +457,7 @@ class ReproductorGUI:
     def _actualizar_lista_actual(self):
         """Actualiza cola"""
         self.lista_actual.delete(0, tk.END)
-        if self.reproductor.lista_actual:
+        if self.reproductor.lista_actual and len(self.reproductor.lista_actual.canciones) > 0:
             for i, cancion in enumerate(self.reproductor.lista_actual.canciones):
                 marcador = "▶ " if i == self.reproductor.lista_actual.indice_actual else "  "
                 fav = "★ " if cancion.es_favorita else ""
@@ -459,20 +466,45 @@ class ReproductorGUI:
 
                 if i == self.reproductor.lista_actual.indice_actual:
                     self.lista_actual.itemconfig(i, bg=self.colors['accent'])
+        else:
+            self.lista_actual.insert(tk.END, "  [Lista vacía]")
+            self.lista_actual.insert(tk.END, "  ")
+            self.lista_actual.insert(tk.END, "  💡 Carga una lista con canciones")
+            self.lista_actual.insert(tk.END, "     o reproduce desde la biblioteca")
 
     # ==================== EVENTOS ====================
 
     def _reproducir_desde_biblioteca(self, event):
-        """Reproduce desde biblioteca"""
+        """Reproduce desde biblioteca - VERSIÓN CORREGIDA"""
         seleccion = self.lista_canciones.curselection()
-        if seleccion:
-            indice = seleccion[0]
-            if not self.reproductor.lista_actual:
-                temp_lista = self.reproductor.biblioteca.crear_lista("Temporal")
+        if not seleccion:
+            return
+
+        indice = seleccion[0]
+
+        # Si no hay lista actual o está vacía, crear una temporal con todas las canciones
+        if not self.reproductor.lista_actual or self.reproductor.lista_actual.obtener_total_canciones() == 0:
+            # Buscar si existe lista temporal
+            temp_lista = self.reproductor.biblioteca.obtener_lista("🎵 Reproducción Rápida")
+
+            # Si no existe, crearla
+            if not temp_lista:
+                temp_lista = self.reproductor.biblioteca.crear_lista("🎵 Reproducción Rápida")
+            else:
+                # Limpiar la lista existente
+                temp_lista.canciones.clear()
+
+            # Agregar todas las canciones de la biblioteca
+            if temp_lista:
                 for cancion in self.reproductor.biblioteca.canciones:
                     temp_lista.agregar_cancion(cancion)
-                self.reproductor.cambiar_lista("Temporal")
 
+                # Cambiar a esta lista
+                self.reproductor.cambiar_lista("🎵 Reproducción Rápida")
+                self._actualizar_listas()
+
+        # Ahora reproducir la canción seleccionada
+        if self.reproductor.lista_actual and self.reproductor.lista_actual.obtener_total_canciones() > 0:
             self.reproductor.lista_actual.indice_actual = indice
             self.reproductor.cancion_actual = self.reproductor.lista_actual.obtener_cancion_actual()
             self.reproductor.play()
@@ -489,21 +521,39 @@ class ReproductorGUI:
             nombres = list(self.reproductor.biblioteca.listas.keys())
             if indice < len(nombres):
                 nombre = nombres[indice]
-                self.reproductor.cambiar_lista(nombre)
-                self._actualizar_info()
-                self._actualizar_lista_actual()
-                messagebox.showinfo("Éxito", f"Lista '{nombre}' cargada")
+                lista = self.reproductor.biblioteca.obtener_lista(nombre)
+
+                # Verificar si la lista tiene canciones
+                if lista and lista.obtener_total_canciones() > 0:
+                    self.reproductor.cambiar_lista(nombre)
+                    self._actualizar_info()
+                    self._actualizar_lista_actual()
+                    messagebox.showinfo("Éxito",
+                                        f"Lista '{nombre}' cargada con {lista.obtener_total_canciones()} canciones")
+                else:
+                    respuesta = messagebox.askyesno(
+                        "Lista Vacía",
+                        f"La lista '{nombre}' está vacía.\n\n¿Deseas cargarla de todas formas?\n\n" +
+                        "Puedes agregar canciones haciendo doble clic en una canción de la biblioteca " +
+                        "y seleccionando 'Agregar a lista'."
+                    )
+                    if respuesta:
+                        self.reproductor.cambiar_lista(nombre)
+                        self._actualizar_info()
+                        self._actualizar_lista_actual()
 
     def _reproducir_desde_cola(self, event):
         """Reproduce desde cola"""
         seleccion = self.lista_actual.curselection()
         if seleccion and self.reproductor.lista_actual:
-            indice = seleccion[0]
-            self.reproductor.reproducir_cancion_especifica(indice)
-            self.btn_play.config(text="⏸")
-            self.lbl_estado.config(text="▶ Reproduciendo", fg=self.colors['success'])
-            self._actualizar_info()
-            self._actualizar_lista_actual()
+            if self.reproductor.lista_actual.obtener_total_canciones() > 0:
+                indice = seleccion[0]
+                if indice < self.reproductor.lista_actual.obtener_total_canciones():
+                    self.reproductor.reproducir_cancion_especifica(indice)
+                    self.btn_play.config(text="⏸")
+                    self.lbl_estado.config(text="▶ Reproduciendo", fg=self.colors['success'])
+                    self._actualizar_info()
+                    self._actualizar_lista_actual()
 
     # ==================== DIÁLOGOS ====================
 
@@ -513,6 +563,8 @@ class ReproductorGUI:
         ventana.title("Nueva Lista")
         ventana.geometry("400x150")
         ventana.configure(bg=self.colors['bg_dark'])
+        ventana.transient(self.root)
+        ventana.grab_set()
 
         tk.Label(ventana, text="Nombre de la lista:",
                  font=('Arial', 11),
@@ -529,7 +581,8 @@ class ReproductorGUI:
                 self.reproductor.biblioteca.crear_lista(nombre)
                 self._actualizar_listas()
                 ventana.destroy()
-                messagebox.showinfo("Éxito", f"Lista '{nombre}' creada")
+                messagebox.showinfo("Éxito",
+                                    f"Lista '{nombre}' creada.\n\nAgrega canciones haciendo doble clic en ellas desde la biblioteca.")
 
         tk.Button(ventana, text="Crear",
                   command=crear,
@@ -572,10 +625,10 @@ class ReproductorGUI:
         tipo = tk.StringVar(value="titulo")
         tk.Radiobutton(frame, text="Título", variable=tipo,
                        value="titulo", bg=self.colors['bg_dark'],
-                       fg=self.colors['text']).pack(side=tk.LEFT)
+                       fg=self.colors['text'], selectcolor=self.colors['bg_light']).pack(side=tk.LEFT)
         tk.Radiobutton(frame, text="Artista", variable=tipo,
                        value="artista", bg=self.colors['bg_dark'],
-                       fg=self.colors['text']).pack(side=tk.LEFT)
+                       fg=self.colors['text'], selectcolor=self.colors['bg_light']).pack(side=tk.LEFT)
 
         entrada = tk.Entry(frame, font=('Arial', 10), width=25)
         entrada.pack(side=tk.LEFT, padx=5)
@@ -748,6 +801,7 @@ class ReproductorGUI:
         """Ejecutar GUI"""
         self._actualizar_canciones()
         self._actualizar_listas()
+        self._actualizar_lista_actual()
 
         # Centrar ventana
         self.root.update_idletasks()

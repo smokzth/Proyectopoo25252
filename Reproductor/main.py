@@ -40,13 +40,13 @@ def crear_datos_demo() -> Biblioteca:
         Cancion("Smells Like Teen Spirit", "Nirvana", 301, "music/nirvana_slts.mp3",
                 "Nevermind", 1991, "Grunge"),
         Cancion("A Dormir Juntitos", "Liz Contigo", 282, "music/adormirjuntitos.mp3",
-                "...And Justice for All", 1988, "Metal"),
+                "Románticas", 2020, "Balada"),
         Cancion("November Rain", "Guns N' Roses", 537, "music/gnr_nr.mp3",
                 "Use Your Illusion I", 1991, "Rock"),
         Cancion("Comfortably Numb", "Pink Floyd", 382, "music/pf_cn.mp3",
                 "The Wall", 1979, "Progressive Rock"),
         Cancion("La Plata", "Diomedes Díaz", 277, "music/laplata.mp3",
-                "Appetite for Destruction", 1987, "Rock"),
+                "Clásicos del Vallenato", 1985, "Vallenato"),
     ]
 
     # Verificar qué archivos existen y cuáles no
@@ -82,42 +82,13 @@ def crear_datos_demo() -> Biblioteca:
         print("   y actualiza las rutas en main.py")
         return biblioteca
 
-    # Crear listas solo con canciones que existen
-    canciones_validas = biblioteca.canciones
-
-    if len(canciones_validas) >= 4:
-        # Lista Rock (canciones índices que sean rock si existen)
-        lista_rock = biblioteca.crear_lista("Rock Clásico")
-        if lista_rock:
-            for cancion in canciones_validas:
-                if cancion.genero in ["Rock", "Grunge", "Progressive Rock", "Metal"]:
-                    lista_rock.agregar_cancion(cancion)
-
-        # Lista Favoritos (primeras 4 canciones disponibles)
-        lista_favoritos = biblioteca.crear_lista("Mis Favoritos")
-        if lista_favoritos:
-            for i, cancion in enumerate(canciones_validas[:4]):
-                lista_favoritos.agregar_cancion(cancion)
-                cancion.es_favorita = True
-
-        # Lista Energéticas
-        lista_energeticas = biblioteca.crear_lista("Para Entrenar")
-        if lista_energeticas:
-            for cancion in canciones_validas:
-                if cancion.genero in ["Hip-Hop", "Metal", "Rock", "Grunge"]:
-                    lista_energeticas.agregar_cancion(cancion)
-
-        print(f"  ✓ 3 listas de reproducción creadas")
-
-        # Simular reproducciones
-        if len(canciones_validas) >= 1:
-            canciones_validas[0].reproducciones = 15
-        if len(canciones_validas) >= 2:
-            canciones_validas[1].reproducciones = 12
-        if len(canciones_validas) >= 3:
-            canciones_validas[2].reproducciones = 20
-        if len(canciones_validas) >= 4:
-            canciones_validas[3].reproducciones = 8
+    # Crear 3 listas VACÍAS con nombres genéricos
+    print(f"\n📋 Creando listas de reproducción vacías...")
+    biblioteca.crear_lista("Mi Lista 1")
+    biblioteca.crear_lista("Mi Lista 2")
+    biblioteca.crear_lista("Mi Lista 3")
+    print(f"  ✓ 3 listas vacías creadas")
+    print(f"  ℹ️  Puedes agregar canciones a estas listas desde la interfaz")
 
     return biblioteca
 
@@ -179,12 +150,9 @@ def main():
     # Crear reproductor
     reproductor = Reproductor(biblioteca)
 
-    # Cambiar a primera lista disponible
-    if biblioteca.listas:
-        primera_lista = list(biblioteca.listas.keys())[0]
-        reproductor.cambiar_lista(primera_lista)
-
-    print("\n✓ Sistema listo\n")
+    # NO cargar ninguna lista por defecto
+    print("\n✓ Sistema listo")
+    print("ℹ️  Tip: Carga una lista o reproduce desde la biblioteca\n")
 
     # Menú de selección
     while True:
