@@ -1,6 +1,7 @@
 """
 Módulo interfaz.py
 Define la clase InterfazConsola para interacción con el usuario
+VERSIÓN ACTUALIZADA - Sincronizada con cambios del reproductor
 """
 
 from reproductor import Reproductor
@@ -54,13 +55,16 @@ class InterfazConsola:
                 print("\nListas disponibles:")
                 for nombre, lista in listas.items():
                     shuffle_icon = "🔀 " if lista.shuffle_activo else ""
-                    print(f"  ▸ {shuffle_icon}{nombre} ({lista.obtener_total_canciones()} canciones)")
+                    total = lista.obtener_total_canciones()
+                    estado = "VACÍA" if total == 0 else f"{total} canciones"
+                    print(f"  ▸ {shuffle_icon}{nombre} ({estado})")
             else:
                 print("\n✗ No hay listas creadas")
 
             print("\n1. Crear nueva lista")
             print("2. Trabajar con lista existente")
             print("3. Eliminar lista")
+            print("4. Ver todas las listas")
             print("0. Volver")
 
             opcion = input("\nSeleccione una opción: ").strip()
@@ -82,29 +86,64 @@ class InterfazConsola:
                 nombre_lista = input("Nombre de la lista a eliminar: ").strip()
                 self.reproductor.biblioteca.eliminar_lista(nombre_lista)
 
+            elif opcion == "4":
+                self._ver_todas_las_listas()
+
             elif opcion == "0":
                 break
+
+    def _ver_todas_las_listas(self):
+        """Muestra información detallada de todas las listas"""
+        listas = self.reproductor.biblioteca.listas
+        if not listas:
+            print("\n✗ No hay listas creadas")
+            return
+
+        print("\n" + "=" * 60)
+        print("📋 TODAS LAS LISTAS".center(60))
+        print("=" * 60)
+
+        for nombre, lista in listas.items():
+            shuffle_texto = " (🔀 ALEATORIO)" if lista.shuffle_activo else ""
+            print(f"\n▸ {nombre}{shuffle_texto}")
+            print(f"  Total: {lista.obtener_total_canciones()} canciones")
+            if lista.obtener_total_canciones() > 0:
+                print(f"  Duración: {lista._get_duracion_total_formateada()}")
+            else:
+                print("  (Lista vacía)")
+        print("=" * 60)
 
     def _menu_lista_especifica(self, lista, nombre_lista):
         """Submenú para gestionar una lista específica"""
         while True:
             print(f"\n{'=' * 60}")
             shuffle_texto = " (🔀 ALEATORIO)" if lista.shuffle_activo else ""
-            print(f"📀 Lista: {nombre_lista}{shuffle_texto}".center(60))
+            total = lista.obtener_total_canciones()
+            estado = "VACÍA" if total == 0 else f"{total} canciones"
+            print(f"📀 Lista: {nombre_lista}{shuffle_texto} ({estado})".center(60))
             print(f"{'=' * 60}")
             print("1. Ver canciones")
             print("2. Agregar canción de la biblioteca")
             print("3. Eliminar canción")
             print("4. Activar/Desactivar shuffle")  # RF6
+            print("5. Cargar esta lista en el reproductor")
             print("0. Volver")
 
             opcion = input("\nSeleccione una opción: ").strip()
 
             if opcion == "1":
-                print(lista.listar_canciones())
+                if lista.obtener_total_canciones() > 0:
+                    print(lista.listar_canciones())
+                else:
+                    print("\n✗ La lista está vacía")
+                    print("💡 Usa la opción 2 para agregar canciones desde la biblioteca")
 
             elif opcion == "2":
                 self.mostrar_biblioteca()
+                if len(self.reproductor.biblioteca.canciones) == 0:
+                    print("\n✗ No hay canciones en la biblioteca")
+                    continue
+
                 try:
                     indice = int(input("\nNúmero de canción a agregar: ")) - 1
                     canciones = self.reproductor.biblioteca.canciones
@@ -116,6 +155,10 @@ class InterfazConsola:
                     print("✗ Entrada inválida. Ingrese un número.")
 
             elif opcion == "3":
+                if lista.obtener_total_canciones() == 0:
+                    print("\n✗ La lista está vacía, no hay nada que eliminar")
+                    continue
+
                 print(lista.listar_canciones())
                 try:
                     indice = int(input("\nNúmero de canción a eliminar: ")) - 1
@@ -124,10 +167,21 @@ class InterfazConsola:
                     print("✗ Entrada inválida. Ingrese un número.")
 
             elif opcion == "4":  # RF6: Shuffle
+                if lista.obtener_total_canciones() == 0:
+                    print("\n✗ No se puede activar shuffle en una lista vacía")
+                    continue
+
                 if lista.shuffle_activo:
                     lista.restaurar_orden()
                 else:
                     lista.shuffle()
+
+            elif opcion == "5":
+                if lista.obtener_total_canciones() > 0:
+                    self.reproductor.cambiar_lista(nombre_lista)
+                else:
+                    print("\n✗ No puedes cargar una lista vacía en el reproductor")
+                    print("💡 Agrega canciones primero")
 
             elif opcion == "0":
                 break
@@ -145,14 +199,22 @@ class InterfazConsola:
             print(f"📋 Lista: {estado['lista']}")
             shuffle_estado = "🔀 Activado" if estado['shuffle'] else "Desactivado"
             print(f"🔀 Shuffle: {shuffle_estado}")
-            print(f"▶ Estado: {'Reproduciendo' if estado['reproduciendo'] else 'Pausado'}")
+
+            # Estado mejorado
+            if estado['pausado']:
+                print(f"⏸ Estado: Pausado")
+            elif estado['reproduciendo']:
+                print(f"▶ Estado: Reproduciendo")
+            else:
+                print(f"⏹ Estado: Detenido")
+
             print(f"🔊 Volumen: {estado['volumen']}%")
             if estado['audio_real']:
                 print("🎼 Modo: Audio Real (pygame)")
             else:
                 print("🎼 Modo: Simulado")
 
-            print("\n1. Play")
+            print("\n1. Play / Resume")
             print("2. Pause")
             print("3. Stop")
             print("4. Siguiente")
@@ -162,60 +224,120 @@ class InterfazConsola:
             print("8. Ajustar volumen")
             print("9. Info de canción actual")
             print("10. Marcar/Desmarcar favorita")  # RF7
+            print("11. Reproducir canción específica")
             print("0. Volver")
 
             opcion = input("\nSeleccione: ").strip()
 
             if opcion == "1":
-                self.reproductor.play()
+                if self.reproductor.cancion_actual:
+                    self.reproductor.play()
+                else:
+                    print("\n✗ No hay canción seleccionada")
+                    print("💡 Carga una lista primero (opción 6)")
+
             elif opcion == "2":
                 self.reproductor.pause()
+
             elif opcion == "3":
                 self.reproductor.stop()
+
             elif opcion == "4":
-                self.reproductor.siguiente()
+                if self.reproductor.lista_actual:
+                    self.reproductor.siguiente()
+                else:
+                    print("✗ No hay lista activa")
+
             elif opcion == "5":
-                self.reproductor.anterior()
+                if self.reproductor.lista_actual:
+                    self.reproductor.anterior()
+                else:
+                    print("✗ No hay lista activa")
+
             elif opcion == "6":
                 self._cambiar_lista_activa()
+
             elif opcion == "7":  # RF6: Shuffle
                 if self.reproductor.lista_actual:
-                    if self.reproductor.lista_actual.shuffle_activo:
+                    if self.reproductor.lista_actual.obtener_total_canciones() == 0:
+                        print("✗ La lista activa está vacía")
+                    elif self.reproductor.lista_actual.shuffle_activo:
                         self.reproductor.desactivar_shuffle()
                     else:
                         self.reproductor.activar_shuffle()
                 else:
                     print("✗ No hay lista activa")
+
             elif opcion == "8":
                 try:
                     vol = float(input("Volumen (0-1): "))
                     self.reproductor.ajustar_volumen(vol)
                 except ValueError:
                     print("✗ Entrada inválida")
+
             elif opcion == "9":
                 if self.reproductor.cancion_actual:
                     print(self.reproductor.cancion_actual.info())
                 else:
                     print("✗ No hay canción seleccionada")
+
             elif opcion == "10":  # RF7: Favoritos
                 if self.reproductor.cancion_actual:
                     self.reproductor.cancion_actual.marcar_favorita()
                 else:
                     print("✗ No hay canción seleccionada")
+
+            elif opcion == "11":
+                self._reproducir_cancion_especifica()
+
             elif opcion == "0":
                 break
+
+    def _reproducir_cancion_especifica(self):
+        """Permite seleccionar y reproducir una canción específica de la lista actual"""
+        if not self.reproductor.lista_actual:
+            print("\n✗ No hay lista activa")
+            print("💡 Carga una lista primero")
+            return
+
+        if self.reproductor.lista_actual.obtener_total_canciones() == 0:
+            print("\n✗ La lista activa está vacía")
+            return
+
+        print(self.reproductor.lista_actual.listar_canciones())
+        try:
+            indice = int(input("\nNúmero de canción a reproducir: ")) - 1
+            self.reproductor.reproducir_cancion_especifica(indice)
+        except ValueError:
+            print("✗ Entrada inválida. Ingrese un número.")
 
     def _cambiar_lista_activa(self):
         """Auxiliar para cambiar la lista activa"""
         listas = self.reproductor.biblioteca.listas
         if listas:
             print("\nListas disponibles:")
-            for nombre in listas.keys():
-                print(f"  ▸ {nombre}")
+            for nombre, lista in listas.items():
+                total = lista.obtener_total_canciones()
+                estado = "VACÍA" if total == 0 else f"{total} canciones"
+                print(f"  ▸ {nombre} ({estado})")
             nombre = input("\nNombre de la lista: ").strip()
-            self.reproductor.cambiar_lista(nombre)
+
+            lista = self.reproductor.biblioteca.obtener_lista(nombre)
+            if lista:
+                if lista.obtener_total_canciones() > 0:
+                    self.reproductor.cambiar_lista(nombre)
+                else:
+                    print(f"\n⚠ La lista '{nombre}' está vacía")
+                    respuesta = input("¿Deseas cargarla de todas formas? (s/n): ").strip().lower()
+                    if respuesta == 's':
+                        self.reproductor.cambiar_lista(nombre)
+                    else:
+                        print("✗ Operación cancelada")
+            else:
+                print(f"✗ La lista '{nombre}' no existe")
         else:
             print("✗ No hay listas creadas")
+            print("💡 Crea una lista desde el menú principal (opción 2)")
 
     def buscar_canciones(self):
         """Busca canciones por título o artista"""
@@ -316,6 +438,11 @@ class InterfazConsola:
                     self.reproductor.biblioteca.importar_desde_csv(ruta)
 
             elif opcion == "2":  # RF9: Exportar
+                if len(self.reproductor.biblioteca.listas) == 0:
+                    print("\n✗ No hay listas para exportar")
+                    print("💡 Crea listas primero desde el menú principal")
+                    continue
+
                 ruta = input("Ruta para guardar JSON (ej: listas.json): ").strip()
                 if ruta:
                     if not ruta.endswith('.json'):
@@ -338,22 +465,30 @@ class InterfazConsola:
 
             if opcion == "1":
                 self.mostrar_biblioteca()
+
             elif opcion == "2":
                 self.gestionar_listas()
+
             elif opcion == "3":
                 self.controles_reproductor()
+
             elif opcion == "4":
                 self.buscar_canciones()
+
             elif opcion == "5":  # RF7: Estadísticas
                 self.reproductor.biblioteca.mostrar_estadisticas()
+
             elif opcion == "6":  # RF7: Favoritos
                 self.menu_favoritos()
+
             elif opcion == "7":  # RF8 y RF9: Importar/Exportar
                 self.menu_importar_exportar()
+
             elif opcion == "0":
                 print("\n" + "=" * 60)
                 print("👋 Gracias por usar el reproductor".center(60))
                 print("=" * 60 + "\n")
                 break
+
             else:
                 print("✗ Opción inválida. Intente de nuevo.")

@@ -37,6 +37,7 @@ class ReproductorGUI:
         self._crear_interfaz()
         self._actualizar_info()
 
+
     def _crear_interfaz(self):
         """Crea todos los componentes de la interfaz"""
         main_frame = tk.Frame(self.root, bg=self.colors['bg_dark'])
@@ -346,15 +347,21 @@ class ReproductorGUI:
     # ==================== MÉTODOS DE CONTROL ====================
 
     def _toggle_play(self):
-        """Play/Pause"""
+        """Play/Pause - CORREGIDO"""
+        # Si está reproduciendo, pausar
         if self.reproductor.reproduciendo:
             self.reproductor.pause()
             self.btn_play.config(text="▶")
             self.lbl_estado.config(text="⏸ Pausado", fg=self.colors['warning'])
+        # Si está pausado o detenido, reproducir/reanudar
         else:
-            self.reproductor.play()
-            self.btn_play.config(text="⏸")
-            self.lbl_estado.config(text="▶ Reproduciendo", fg=self.colors['success'])
+            # Si hay canción seleccionada, reproducir
+            if self.reproductor.cancion_actual:
+                self.reproductor.play()
+                self.btn_play.config(text="⏸")
+                self.lbl_estado.config(text="▶ Reproduciendo", fg=self.colors['success'])
+            else:
+                messagebox.showwarning("Advertencia", "Selecciona una canción primero")
         self._actualizar_info()
 
     def _stop(self):

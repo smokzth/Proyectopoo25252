@@ -1,6 +1,7 @@
 """
 Módulo reproductor.py
 Define la clase Reproductor para controlar la reproducción de música
+VERSIÓN CORREGIDA - Pausa y resume correctamente
 """
 
 from biblioteca import Biblioteca
@@ -28,6 +29,7 @@ class Reproductor:
         lista_actual (ListaDeReproduccion): Lista en reproducción
         cancion_actual (Cancion): Canción seleccionada
         reproduciendo (bool): Estado de reproducción
+        pausado (bool): Estado de pausa
         volumen (float): Nivel de volumen (0.0-1.0)
         modo_audio_real (bool): Indica si pygame está disponible
     """
@@ -37,6 +39,7 @@ class Reproductor:
         self.lista_actual: Optional[ListaDeReproduccion] = None
         self.cancion_actual: Optional[Cancion] = None
         self.reproduciendo = False
+        self.pausado = False  # NUEVO: para distinguir entre pausado y detenido
         self.volumen = 0.7
         self.modo_audio_real = PYGAME_DISPONIBLE
 
@@ -53,7 +56,20 @@ class Reproductor:
     def play(self) -> None:
         """Inicia o reanuda la reproducción"""
         if self.cancion_actual:
+            # Si estaba pausado, solo reanudar
+            if self.pausado and self.modo_audio_real:
+                try:
+                    pygame.mixer.music.unpause()
+                    self.reproduciendo = True
+                    self.pausado = False
+                    print(f"\n▶ REANUDANDO: {self.cancion_actual}")
+                    return
+                except Exception as e:
+                    print(f"⚠ Error al reanudar: {e}")
+
+            # Si no estaba pausado, iniciar desde el principio
             self.reproduciendo = True
+            self.pausado = False
             self.cancion_actual.incrementar_reproducciones()
 
             # RF10: Reproducción real con pygame
@@ -75,8 +91,9 @@ class Reproductor:
 
     def pause(self) -> None:
         """Pausa la reproducción"""
-        if self.reproduciendo:
+        if self.reproduciendo and not self.pausado:
             self.reproduciendo = False
+            self.pausado = True
 
             # RF10: Pausar audio real
             if self.modo_audio_real:
@@ -90,8 +107,9 @@ class Reproductor:
             print("✗ No hay reproducción activa")
 
     def stop(self) -> None:
-        """Detiene la reproducción"""
+        """Detiene la reproducción completamente"""
         self.reproduciendo = False
+        self.pausado = False
 
         # RF10: Detener audio real
         if self.modo_audio_real:
@@ -105,8 +123,10 @@ class Reproductor:
     def siguiente(self) -> None:
         """Avanza a la siguiente canción"""
         if self.lista_actual:
+            was_playing = self.reproduciendo
+            self.stop()  # Detener la canción actual
             self.cancion_actual = self.lista_actual.siguiente()
-            if self.reproduciendo and self.cancion_actual:
+            if was_playing and self.cancion_actual:
                 self.play()
             elif self.cancion_actual:
                 print(f"⏭ Siguiente: {self.cancion_actual}")
@@ -116,8 +136,10 @@ class Reproductor:
     def anterior(self) -> None:
         """Retrocede a la canción anterior"""
         if self.lista_actual:
+            was_playing = self.reproduciendo
+            self.stop()  # Detener la canción actual
             self.cancion_actual = self.lista_actual.anterior()
-            if self.reproduciendo and self.cancion_actual:
+            if was_playing and self.cancion_actual:
                 self.play()
             elif self.cancion_actual:
                 print(f"⏮ Anterior: {self.cancion_actual}")
@@ -128,6 +150,7 @@ class Reproductor:
         """Cambia la lista de reproducción actual"""
         lista = self.biblioteca.obtener_lista(nombre_lista)
         if lista and lista.obtener_total_canciones() > 0:
+            self.stop()  # Detener lo que esté sonando
             self.lista_actual = lista
             self.cancion_actual = lista.obtener_cancion_actual()
             print(f"✓ Lista activa: {nombre_lista}")
@@ -173,6 +196,7 @@ class Reproductor:
             "cancion": str(self.cancion_actual) if self.cancion_actual else "Ninguna",
             "lista": self.lista_actual.nombre if self.lista_actual else "Ninguna",
             "reproduciendo": self.reproduciendo,
+            "pausado": self.pausado,
             "shuffle": self.lista_actual.shuffle_activo if self.lista_actual else False,
             "volumen": int(self.volumen * 100),
             "audio_real": self.modo_audio_real
@@ -181,6 +205,7 @@ class Reproductor:
     def reproducir_cancion_especifica(self, indice: int) -> None:
         """Reproduce una canción específica de la lista actual"""
         if self.lista_actual and 0 <= indice < self.lista_actual.obtener_total_canciones():
+            self.stop()  # Detener primero
             self.lista_actual.indice_actual = indice
             self.cancion_actual = self.lista_actual.obtener_cancion_actual()
             self.play()
@@ -188,7 +213,12 @@ class Reproductor:
             print("✗ Índice inválido")
 
     def __str__(self) -> str:
-        estado = "reproduciendo" if self.reproduciendo else "pausado"
+        if self.pausado:
+            estado = "pausado"
+        elif self.reproduciendo:
+            estado = "reproduciendo"
+        else:
+            estado = "detenido"
         return f"Reproductor ({estado})"
 
     def __del__(self):
