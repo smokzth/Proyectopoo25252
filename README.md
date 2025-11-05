@@ -77,17 +77,21 @@ classDiagram
         -año: int
         -genero: str
         -reproducciones: int
+        -es_favorita: bool
         +__init__(titulo: str, artista: str, duracion: int, ruta: str)
         +info() str
         +incrementar_reproducciones() None
+        +marcar_favorita() None
         +get_duracion_formateada() str
+        +to_dict() dict
     }
-    
+
     class ListaDeReproduccion {
         -nombre: str
         -canciones: list[Cancion]
         -indice_actual: int
         -orden_original: list[Cancion]
+        -shuffle_activo: bool
         +__init__(nombre: str)
         +agregar_cancion(cancion: Cancion) None
         +eliminar_cancion(indice: int) None
@@ -95,9 +99,11 @@ classDiagram
         +siguiente() Cancion | None
         +anterior() Cancion | None
         +listar_canciones() str
-        +obtener_total_canciones() int
+        +shuffle() None
+        +restaurar_orden() None
+        +to_dict() dict
     }
-    
+
     class Biblioteca {
         -canciones: list[Cancion]
         -listas: dict[str, ListaDeReproduccion]
@@ -107,28 +113,36 @@ classDiagram
         +buscar_por_titulo(titulo: str) list[Cancion]
         +buscar_por_artista(artista: str) list[Cancion]
         +crear_lista(nombre: str) ListaDeReproduccion | None
-        +eliminar_lista(nombre: str) None
-        +obtener_lista(nombre: str) ListaDeReproduccion | None
+        +obtener_favoritas() list[Cancion]
+        +obtener_top_canciones(n: int) list[Cancion]
         +mostrar_estadisticas() None
+        +importar_desde_csv(ruta: str) None
+        +exportar_listas_json(ruta: str) None
+        +importar_listas_json(ruta: str) None
     }
-    
+
     class Reproductor {
         -biblioteca: Biblioteca
         -lista_actual: ListaDeReproduccion | None
         -cancion_actual: Cancion | None
         -reproduciendo: bool
         -volumen: float
+        -modo_audio_real: bool
         +__init__(biblioteca: Biblioteca)
         +play() None
         +pause() None
+        +unpause() None
         +stop() None
         +siguiente() None
         +anterior() None
         +cambiar_lista(nombre_lista: str) None
+        +activar_shuffle() None
+        +desactivar_shuffle() None
         +ajustar_volumen(nivel: float) None
-        +obtener_estado() dict
+        +seek(posicion_segundos: float) None
+        +get_posicion_actual() float
     }
-    
+
     class InterfazConsola {
         -reproductor: Reproductor
         +__init__(reproductor: Reproductor)
@@ -137,16 +151,69 @@ classDiagram
         +gestionar_listas() None
         +controles_reproductor() None
         +buscar_canciones() None
+        +menu_favoritos() None
+        +menu_importar_exportar() None
         +ejecutar() None
     }
-    
+
+    class ReproductorGUI {
+        -reproductor: Reproductor
+        -root: tk.Tk
+        -colors: dict
+        -lista_canciones: tk.Listbox
+        -lista_listas: tk.Listbox
+        -lista_actual: tk.Listbox
+        -btn_play: tk.Button
+        -progress_slider: tk.Scale
+        -volume_slider: tk.Scale
+        +__init__(reproductor: Reproductor)
+        +_crear_interfaz() None
+        +_crear_panel_izquierdo() None
+        +_crear_panel_central() None
+        +_crear_panel_derecho() None
+        +_toggle_play() None
+        +_siguiente() None
+        +_anterior() None
+        +_toggle_shuffle() None
+        +_toggle_favorita() None
+        +_actualizar_progreso() None
+        +_seek_musica(valor) None
+        +_importar_csv() None
+        +_exportar_json() None
+        +ejecutar() None
+    }
+
+    class GestorArchivos {
+        +leer_csv(ruta: str) list
+        +guardar_json(ruta: str, datos: dict) None
+        +leer_json(ruta: str) dict
+    }
+
+    class ControlVolumen {
+        -nivel: float
+        +__init__(nivel_inicial: float)
+        +aumentar(delta: float) float
+        +disminuir(delta: float) float
+        +establecer(nivel: float) float
+    }
+
+    class ExcepcionReproductor {
+        +__init__(mensaje: str)
+        +__str__() str
+    }
+
     Biblioteca "1" *-- "*" Cancion : contiene
     Biblioteca "1" *-- "*" ListaDeReproduccion : gestiona
     ListaDeReproduccion "1" o-- "*" Cancion : referencia
     Reproductor "1" --> "1" Biblioteca : usa
     Reproductor "1" --> "0..1" ListaDeReproduccion : reproduce
     Reproductor "1" --> "0..1" Cancion : actual
+    Reproductor "1" *-- "1" ControlVolumen : controla
     InterfazConsola "1" --> "1" Reproductor : controla
+    ReproductorGUI "1" --> "1" Reproductor : controla
+    Biblioteca "1" --> "1" GestorArchivos : usa
+    Reproductor "1" --> "0..*" ExcepcionReproductor : lanza
+
 ```
 
 ### Descripción de Clases
