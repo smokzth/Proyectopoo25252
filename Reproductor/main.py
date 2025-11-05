@@ -21,7 +21,7 @@ def crear_datos_demo() -> Biblioteca:
                 "A Night at the Opera", 1975, "Rock"),
         Cancion("Space bound", "Eminem", 264, "music/spacebound.mp3",
                 "Imagine", 1971, "Rock"),
-        Cancion("Stairway to Heaven", "Led Zeppelin", 482, "music/lz_stairway.mp3",
+        Cancion("Olvidala", "Binomio de Oro", 267, "music/olvidala.mp3",
                 "Led Zeppelin IV", 1971, "Rock"),
         Cancion("Hotel California", "Eagles", 391, "music/eagles_hc.mp3",
                 "Hotel California", 1976, "Rock"),
