@@ -232,6 +232,17 @@ class ReproductorGUI:
                                       padx=15, pady=8)
         self.btn_favorita.pack(side=tk.LEFT, padx=5)
 
+        # ➕ Agregar a lista (AHORA en extras_frame, junto a Favorita y Shuffle)
+        btn_agregar_lista = tk.Button(extras_frame,
+                                      text="➕ Agregar a Lista",
+                                      font=("Segoe UI", 10, "bold"),
+                                      bg="#394b61",
+                                      fg="white",
+                                      activebackground="#4f688f",
+                                      relief="flat",
+                                      command=self._agregar_a_lista)
+        btn_agregar_lista.pack(side=tk.LEFT, padx=5)
+
         # Cola de reproducción
         tk.Label(center_panel, text="📋 Cola de Reproducción",
                  font=('Arial', 12, 'bold'),
@@ -512,6 +523,8 @@ class ReproductorGUI:
 
         # Ahora reproducir la canción seleccionada
         if self.reproductor.lista_actual and self.reproductor.lista_actual.obtener_total_canciones() > 0:
+            # índice corresponde a la posición en la biblioteca; si la lista actual fue creada
+            # con todas las canciones en el mismo orden, el índice es válido.
             self.reproductor.lista_actual.indice_actual = indice
             self.reproductor.cancion_actual = self.reproductor.lista_actual.obtener_cancion_actual()
             self.reproductor.play()
@@ -613,6 +626,86 @@ class ReproductorGUI:
                     self._actualizar_listas()
         else:
             messagebox.showwarning("Advertencia", "Selecciona una lista")
+
+    def _agregar_a_lista(self):
+        """Agrega una canción seleccionada a una lista existente"""
+        # Verificar si hay una canción seleccionada en la biblioteca
+        seleccion = self.lista_canciones.curselection()
+        if not seleccion:
+            messagebox.showwarning("Advertencia", "Selecciona una canción de la biblioteca primero.")
+            return
+
+        indice_cancion = seleccion[0]
+
+        # Asegurarse de que el índice esté en rango
+        if indice_cancion < 0 or indice_cancion >= len(self.reproductor.biblioteca.canciones):
+            messagebox.showerror("Error", "Índice de canción inválido.")
+            return
+
+        cancion = self.reproductor.biblioteca.canciones[indice_cancion]
+
+        # Verificar si hay listas disponibles
+        listas = list(self.reproductor.biblioteca.listas.keys())
+        if not listas:
+            messagebox.showwarning("Sin Listas", "Primero crea una lista antes de agregar canciones.")
+            return
+
+        # Crear ventana para seleccionar a qué lista agregar
+        ventana = tk.Toplevel(self.root)
+        ventana.title("Agregar a Lista")
+        ventana.geometry("350x250")
+        ventana.configure(bg=self.colors['bg_dark'])
+        ventana.transient(self.root)
+        ventana.grab_set()
+
+        tk.Label(ventana, text=f"Agregar '{cancion.titulo}' a:",
+                 font=('Arial', 11, 'bold'),
+                 bg=self.colors['bg_dark'], fg=self.colors['text']).pack(pady=10)
+
+        lista_box = tk.Listbox(ventana,
+                               bg=self.colors['bg_light'],
+                               fg=self.colors['text'],
+                               font=('Arial', 10),
+                               selectmode=tk.SINGLE,
+                               borderwidth=0,
+                               highlightthickness=0,
+                               selectbackground=self.colors['accent'])
+        lista_box.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        for nombre in listas:
+            lista_box.insert(tk.END, nombre)
+
+        def agregar():
+            seleccion_lista = lista_box.curselection()
+            if not seleccion_lista:
+                messagebox.showwarning("Advertencia", "Selecciona una lista.")
+                return
+
+            nombre_lista = listas[seleccion_lista[0]]
+            lista = self.reproductor.biblioteca.obtener_lista(nombre_lista)
+
+            if lista:
+                lista.agregar_cancion(cancion)
+                ventana.destroy()
+                self._actualizar_listas()
+                messagebox.showinfo("Éxito",
+                                    f"La canción '{cancion.titulo}' fue agregada a la lista '{nombre_lista}'.")
+            else:
+                messagebox.showerror("Error", f"No se encontró la lista '{nombre_lista}'.")
+
+        tk.Button(ventana, text="Agregar",
+                  command=agregar,
+                  bg=self.colors['success'], fg='white',
+                  font=('Arial', 10, 'bold'),
+                  relief=tk.FLAT, cursor='hand2',
+                  padx=20, pady=8).pack(pady=5)
+
+        tk.Button(ventana, text="Cancelar",
+                  command=ventana.destroy,
+                  bg=self.colors['accent'], fg='white',
+                  font=('Arial', 10, 'bold'),
+                  relief=tk.FLAT, cursor='hand2',
+                  padx=20, pady=8).pack(pady=5)
 
     def _buscar(self):
         """Buscar"""
