@@ -34,12 +34,13 @@ Sistema de gestión musical con arquitectura orientada a objetos:
 
 ## ✨ Características
 
-### Implementadas en MVP 
+### Implementadas
 
 #### 📚 Gestión de Biblioteca
 - Agregar canciones con (título, artista, álbum, año, género)
 - Eliminar canciones del catálogo
 - Listar todas las canciones con formato legible
+
 #### 🎵 Listas de Reproducción
 - Crear múltiples listas personalizadas
 - Agregar/eliminar canciones de listas
@@ -61,6 +62,20 @@ Sistema de gestión musical con arquitectura orientada a objetos:
 - Total de listas creadas
 - Duración acumulada de toda la música
 - Información detallada por canción
+
+#### 🔀 Modo Aleatorio
+- Reproducción aleatoria de canciones
+
+#### ⭐ Sistema de Favoritos
+- Marcar canciones favoritas
+- Ver estadísticas de reproducción
+
+#### 📥 Importar/Exportar
+- Importar canciones desde CSV
+- Exportar/importar listas en JSON
+
+#### 🎧 Reproducción Real
+- Reproducción de archivos MP3/WAV
 
 ---
 
@@ -245,12 +260,9 @@ Interfaz de usuario en modo consola.
 
 ---
 
-
-
-
 ## 📋 Requisitos Funcionales
 
-### ✅ Implementados (Primera entrega)
+### ✅ Todos los Requisitos Completados
 
 #### RF1: Gestionar Biblioteca Musical
 - *Descripción*: Agregar, eliminar y listar canciones
@@ -277,23 +289,26 @@ Interfaz de usuario en modo consola.
 - *Archivos*: cancion.py, interfaz.py
 - *Estado*: ✅ Completado
 
-### 🔜 Planificados (Entrega final)
-
 #### RF6: Modo Aleatorio
-- Reproducción aleatoria de canciones
-- Librería: random
+- *Descripción*: Reproducción aleatoria de canciones
+- *Librería*: random
+- *Estado*: ✅ Completado
 
 #### RF7: Sistema de Favoritos y Estadísticas
-- Marcar canciones favoritas
+- *Descripción*: Marcar canciones favoritas
+- *Estado*: ✅ Completado
 
 #### RF8: Importar desde CSV
-- Carga masiva de canciones
-- Librería: csv
+- *Descripción*: Carga masiva de canciones
+- *Librería*: csv
+- *Estado*: ✅ Completado
 
 #### RF9: Exportar a JSON
-- Persistencia de listas
-- Librería: json
+- *Descripción*: Persistencia de listas
+- *Librería*: json
+- *Estado*: ✅ Completado
 
 #### RF10: Reproducción Real de Audio
-- Reproducción de archivos MP3/WAV
-- Librería: pygame
+- *Descripción*: Reproducción de archivos MP3/WAV
+- *Librería*: pygame
+- *Estado*: ✅ Completado
