@@ -773,7 +773,7 @@ if __name__ == "__main__":
     biblioteca = Biblioteca()
 
     canciones = [
-        Cancion("Bohemian Rhapsody", "Queen", 355, "music/cancion1.mp3",
+        Cancion("Bohemian Rhapsody", "Queen", 355, "music/lovetheway.mp3",
                 "A Night at the Opera", 1975, "Rock"),
         Cancion("Imagine", "John Lennon", 183, "music/lennon.mp3",
                 "Imagine", 1971, "Rock"),

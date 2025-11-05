@@ -17,9 +17,9 @@ def crear_datos_demo() -> Biblioteca:
     print("📦 Cargando datos de demostración...")
 
     canciones_demo = [
-        Cancion("Love The Way You Lie", "Rihanna", 263, "music/cancion1.mp3",
+        Cancion("Love The Way You Lie", "Rihanna", 263, "music/lovetheway.mp3",
                 "A Night at the Opera", 1975, "Rock"),
-        Cancion("Space bound", "Eminem", 264, "music/cancion2.mp3",
+        Cancion("Space bound", "Eminem", 264, "music/spacebound.mp3",
                 "Imagine", 1971, "Rock"),
         Cancion("Stairway to Heaven", "Led Zeppelin", 482, "music/lz_stairway.mp3",
                 "Led Zeppelin IV", 1971, "Rock"),
