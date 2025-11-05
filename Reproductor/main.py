@@ -27,26 +27,26 @@ def crear_datos_demo() -> Biblioteca:
     # con los archivos que tienes en tu carpeta music/
     canciones_demo = [
         # Formato: Cancion(titulo, artista, duracion_segundos, ruta, album, año, genero)
-        Cancion("Love The Way You Lie", "Rihanna ft. Eminem", 263, "music/lovetheway.mp3",
+        Cancion("Love The Way You Lie", "Eminem ft. Rihanna", 263, "music/lovetheway.mp3",
                 "Recovery", 2010, "Hip-Hop"),
-        Cancion("Space Bound", "Eminem", 264, "music/spacebound.mp3",
+        Cancion("Space Bound", "Eminem", 279, "music/spacebound.mp3",
                 "Recovery", 2010, "Hip-Hop"),
-        Cancion("Olvidala", "Binomio de Oro", 267, "music/olvidala.mp3",
-                "Clásicos", 1990, "Vallenato"),
-        Cancion("el dia de mi suerte", "WILLIE COLON & HECTOR LAVOE", 328, "music/diademisuerte.mp3",
-                "Hotel California", 1976, "Rock"),
+        Cancion("Olvídala", "Binomio de Oro", 304, "music/olvidala.mp3",
+                "Clásicos", 1998, "Vallenato"),
+        Cancion("El Día de Mi Suerte", "Willie Colón & Héctor Lavoe", 320, "Lo Mato", 1973, "Salsa"),
         Cancion("La Avispa", "El Andariego", 232, "music/laavispa.mp3",
                 "Clásicos", 1980, "Vallenato"),
-        Cancion("pelea con el diablo", "Octavio Mesa", 165, "music/peleaconeldiablo.mp3",
-                "Nevermind", 1991, "Grunge"),
+        Cancion("Pelea con el Diablo", "Octavio Mesa", 165, "music/peleaconeldiablo.mp3",
+                "Desconocido", 1991, "Grunge"),
         Cancion("A Dormir Juntitos", "Liz Contigo", 282, "music/adormirjuntitos.mp3",
                 "Románticas", 2020, "Balada"),
         Cancion("Reminiscencias", "Julio Jaramillo", 136, "music/reminiscencias.mp3",
-                "Use Your Illusion I", 1991, "Rock"),
-        Cancion("Tu eres ajena", "Eddy herrera", 293, "music/tueresajena.mp3",
-                "The Wall", 1979, "Progressive Rock"),
+                "Desconocido", 1991, "Rock"),
+        Cancion("Tú eres ajena", "Eddy Herrera", 293, "music/tueresajena.mp3",
+                "The Wall", 1979, "Merengue"),
         Cancion("La Plata", "Diomedes Díaz", 277, "music/laplata.mp3",
                 "Clásicos del Vallenato", 1985, "Vallenato"),
+
     ]
 
     # Verificar qué archivos existen y cuáles no
